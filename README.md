@@ -1,6 +1,6 @@
 # UnclutterDesktop
 Unclutter your desktop with a Click
-Overview
+
 This script scans the Desktop directory for files and organizes them into folders according to their file extensions. Each folder is named after the respective extension, and multiple files with the same extension are placed in the same folder.
 
 Example
@@ -13,9 +13,8 @@ Desktop/
 |-- document2.docx
 |-- image2.png
 |-- organize_desktop.py
-After running the script:
 ```
-
+After running the script:
 ```
 Desktop/
 |-- txt/
@@ -29,7 +28,9 @@ Desktop/
 |-- organize_desktop.py
 ```
 
-Notes
+Notes:
 The script assumes a case-sensitive file extension.
+
 Make sure to backup important files before running the script.
+
 The script excludes itself from being moved into a folder.
