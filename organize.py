@@ -1,44 +1,55 @@
 import os
 import shutil
 
-def organize_desktop():
-    desktop_path = os.path.expanduser("~/Desktop")
-    script_filename = os.path.basename(__file__)  # Get the filename of the script
+# Path to the user's desktop
+desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
 
-    # Create a dictionary to store files based on their extensions
-    files_by_extension = {}
+# List of files to ignore
+ignore_files = ['Recycle Bin']
+ignore_extensions = ['.py', '.lnk']
 
-    # Iterate over all files on the desktop
-    for filename in os.listdir(desktop_path):
-        file_path = os.path.join(desktop_path, filename)
+# Check if a file is a shortcut or a file that should be ignored
+def should_ignore(file_name, extension):
+    if file_name in ignore_files:
+        return True
+    if extension in ignore_extensions:
+        return True
+    return False
 
-        # Check if the path is a file (not a directory) and exclude the script file
-        if os.path.isfile(file_path) and filename != script_filename:
-            # Extract the file extension
-            _, extension = os.path.splitext(filename)
+# Create a folder only if it doesn't exist
+def create_folder(folder_path):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"Created folder: {folder_path}")
+    else:
+        print(f"Folder already exists: {folder_path}")
 
-            # Remove the leading dot from the extension
-            extension = extension[1:]
+# Move files to their respective extension folders
+def organize_files():
+    for item in os.listdir(desktop_path):
+        item_path = os.path.join(desktop_path, item)
 
-            # If the extension is not in the dictionary, create an entry
-            if extension not in files_by_extension:
-                files_by_extension[extension] = []
+        # Skip directories or Recycle Bin
+        if os.path.isdir(item_path) or should_ignore(item, None):
+            continue
+        
+        # Get the file extension
+        file_name, file_extension = os.path.splitext(item)
 
-            # Append the file to the list of files with the same extension
-            files_by_extension[extension].append(file_path)
+        # Skip ignored extensions
+        if should_ignore(None, file_extension):
+            continue
 
-    # Create folders for each extension and move files accordingly
-    for extension, files in files_by_extension.items():
-        folder_path = os.path.join(desktop_path, extension)
+        # Create folder for the extension
+        extension_folder = os.path.join(desktop_path, file_extension[1:].upper() + "_Files")
+        create_folder(extension_folder)
 
-        # Create the folder if it doesn't exist
-        os.makedirs(folder_path, exist_ok=True)
-
-        # Move files to the corresponding folder
-        for file_path in files:
-            shutil.move(file_path, folder_path)
-
-    print("Desktop organized successfully!")
+        # Move the file to the respective folder
+        try:
+            shutil.move(item_path, os.path.join(extension_folder, item))
+            print(f"Moved {item} to {extension_folder}")
+        except Exception as e:
+            print(f"Error moving {item}: {e}")
 
 if __name__ == "__main__":
-    organize_desktop()
+    organize_files()
